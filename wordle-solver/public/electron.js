@@ -1,17 +1,17 @@
 const { app, BrowserWindow } = require('electron');
-const isDev = require('electron-is-dev');   
+const isDev = require('electron-is-dev');
 const path = require('path');
 
 let mainWindow;
- 
+
 function createWindow() {
     mainWindow = new BrowserWindow({
         width:1000,
         minWidth: 600,
         height:800,
         minHeight: 600,
-        autoHideMenuBar: true,
         show: false,
+        autoHideMenuBar: true,
         webPreferences: {
             nodeIntegration: true,
         },
@@ -26,7 +26,7 @@ function createWindow() {
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
-}
+}``
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {

@@ -4,9 +4,10 @@ import {
     Routes,
     Route
 } from "react-router-dom";
-import Home from './screens/Home';
-import Solver from './screens/Solver';
+import Home from './screens/Home/Home';
+import Solver from './screens/Solver/Solver';
 
+// application root
 function App() {
     return (
         <Routes>
