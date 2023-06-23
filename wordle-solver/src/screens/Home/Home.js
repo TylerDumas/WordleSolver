@@ -52,7 +52,7 @@ const Home = () => {
                 />
                 <div style={{marginTop: 50}}/>
                 <button
-                    onClick={() => navigate('/solver', { state: { letterOption: selectedOption } } )}
+                    onClick={() => navigate('/solver', { state: { numLetters: selectedOption } } )}
                     className="button"
                     type="button"
                     style={{width: '200px',height: '50px'}}

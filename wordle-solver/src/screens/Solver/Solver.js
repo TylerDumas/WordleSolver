@@ -6,36 +6,40 @@ import cn from "classnames";
 import LetterTile from "../../components/LetterTile/LetterTile";
 import { alphabet } from "../../util/alphabet";
 import { ReactComponent as BackButton } from "../../assets/images/back-button.svg";
+import { ReactComponent as Refresh } from "../../assets/images/refresh.svg";
 import { Colors } from "../../util/constants";
 const words = require('an-array-of-english-words')
 
 // The Main Puzzle Solving page.
 const Solver = () => {
     const { state } = useLocation();    // Read values passed on state
-    const { letterOption } = state; // How many letters are we solving for?
+    const { numLetters } = state; // How many letters are we solving for?
     const [pinVal, setPinVal] = useState({});    // value of the pin input (puzzle solver)
     const [suggestions, setSuggestions] = useState([]); // possible matches
     const [hasInitialized, setHasInitialized] = useState(false);
-    const [possibleLetters, setPossibleLetters] = useState({...alphabet})
-    const pinRef = useRef();
+    const [possibleLetters, setPossibleLetters] = useState({...alphabet})   // keep track of eliminated letters
+    const pinRef = useRef();    // pin field ref
 
     // Called on initialization
     useEffect(() => {
+        init()
+    }, [])
+
+    function init() {
         let temp = {}
         let i = 0;
-        while(i < letterOption.value){  // set pin val to empty strings
+        while(i < numLetters.value){  // set pin val to empty strings
             temp[i] = '';
             i++;
         }
         setPinVal(temp);
         setHasInitialized(true);
-    }, [])
+    }
 
-    // Called whenever a letter is typed.
-    useEffect(() => {
+    function onInit(){
         if(hasInitialized){ // this runs only from the 2nd render onwards.
             let matches = []
-            words.filter(d => d.length === letterOption.value).forEach((word, index) => {
+            words.filter(d => d.length === numLetters.value).forEach((word, index) => {
                 let chars = word.split(''); // Split the word into a char array
                 let isMatch = true; // If any character is wrong, it's not a match
                 let i = 0;
@@ -45,21 +49,26 @@ const Solver = () => {
                         break;
                     }
                 }
-               if(isMatch){
-                   for(let char of chars){
-                       if(pinVal[i] && pinVal[i].length && char.toLowerCase() !== pinVal[i].toLowerCase()){
-                           isMatch = false
-                           break;
-                       }
-                       i++;
-                   }
-               }
+                if(isMatch){
+                    for(let char of chars){
+                        if(pinVal[i] && pinVal[i].length && char.toLowerCase() !== pinVal[i].toLowerCase()){
+                            isMatch = false
+                            break;
+                        }
+                        i++;
+                    }
+                }
                 if(isMatch){
                     matches.push(word)
                 }
             })
             setSuggestions(matches)
         }
+    }
+
+    // Called whenever a letter is typed.
+    useEffect(() => {
+        onInit()
     }, [pinVal, possibleLetters])
 
     const toggleEliminated = (char) => {
@@ -81,14 +90,14 @@ const Solver = () => {
                         fontFamily: "\"Trebuchet MS\", serif, sans-serif"
                     }}
                 >
-                    Solve for a {letterOption.value} letter Puzzle
+                    Solve for a {numLetters.value} letter Puzzle
                 </h1>
-                <div /> {/* empty div for flex spacing*/}
+                <div/>
             </div>
             <div className="pin-field-container">
                 <PinField
                     ref={pinRef}
-                    length={letterOption.value}
+                    length={numLetters.value}
                     onChange={(code) => {
                         let temp = {...pinVal}
                         pinRef.current.forEach((input, index) => temp[index] = input.value)
