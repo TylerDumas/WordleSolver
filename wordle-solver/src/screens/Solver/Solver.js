@@ -1,12 +1,11 @@
 import "./Solver.css";
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from "react-router-dom";
 import PinField from "react-pin-field"
 import cn from "classnames";
 import LetterTile from "../../components/LetterTile/LetterTile";
 import { alphabet } from "../../util/alphabet";
 import { ReactComponent as BackButton } from "../../assets/images/back-button.svg";
-import { ReactComponent as Refresh } from "../../assets/images/refresh.svg";
 import { Colors } from "../../util/constants";
 const words = require('an-array-of-english-words')
 
@@ -15,17 +14,12 @@ const Solver = () => {
     const { state } = useLocation();    // Read values passed on state
     const { numLetters } = state; // How many letters are we solving for?
     const [pinVal, setPinVal] = useState({});    // value of the pin input (puzzle solver)
-    const [suggestions, setSuggestions] = useState([]); // possible matches
+    const [possibleMatches, setPossibleMatches] = useState([]); // possible matches
     const [hasInitialized, setHasInitialized] = useState(false);
     const [possibleLetters, setPossibleLetters] = useState({...alphabet})   // keep track of eliminated letters
     const pinRef = useRef();    // pin field ref
 
-    // Called on initialization
-    useEffect(() => {
-        init()
-    }, [])
-
-    function init() {
+    const init = useCallback(() => {
         let temp = {}
         let i = 0;
         while(i < numLetters.value){  // set pin val to empty strings
@@ -34,10 +28,10 @@ const Solver = () => {
         }
         setPinVal(temp);
         setHasInitialized(true);
-    }
+    }, [numLetters.value]);
 
-    function onInit(){
-        if(hasInitialized){ // this runs only from the 2nd render onwards.
+    const onLetterTyped = useCallback(() => {
+        if(hasInitialized){  // this runs only from the 2nd render onwards.
             let matches = []
             words.filter(d => d.length === numLetters.value).forEach((word, index) => {
                 let chars = word.split(''); // Split the word into a char array
@@ -62,14 +56,19 @@ const Solver = () => {
                     matches.push(word)
                 }
             })
-            setSuggestions(matches)
+            setPossibleMatches(matches)
         }
-    }
+    }, [pinVal, possibleLetters, hasInitialized, numLetters.value]);
+
+    // Called on initialization
+    useEffect(() => {
+        init()
+    }, [init])
 
     // Called whenever a letter is typed.
     useEffect(() => {
-        onInit()
-    }, [pinVal, possibleLetters])
+        onLetterTyped()
+    }, [pinVal, possibleLetters, onLetterTyped])
 
     const toggleEliminated = (char) => {
         let temp = {...possibleLetters}
@@ -122,7 +121,7 @@ const Solver = () => {
             <h3 style={{textAlign: 'center', color: Colors.black, fontFamily: '"Trebuchet MS", serif, sans-serif'}}>It Could Be:</h3>
             <div className="scroller">
                 {
-                    suggestions.length ? suggestions.map((item, index) => {
+                    possibleMatches.length ? possibleMatches.map((item, index) => {
                             if(item){
                                 return (
                                     <div key={item + index} className={'item'}>

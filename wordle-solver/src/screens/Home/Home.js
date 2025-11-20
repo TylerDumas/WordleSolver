@@ -21,9 +21,8 @@ const Home = () => {
     return (
         <div className="container">
             <h1 className="header-text">Wordle Solver</h1>
-            <h3 className="header-text">Welcome!</h3>
             <h3 className="header-text">How many letters are in the puzzle?</h3>
-            <div style={{justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column'}}>
+            <div style={{justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', marginTop: 20}}>
                 <Select
                     defaultValue={selectedOption}
                     onChange={setSelectedOption}
@@ -42,7 +41,7 @@ const Home = () => {
                             ...baseStyles,
                             backgroundColor: Colors.green,
                             borderColor: Colors.black,
-                            color: Colors.black,
+                            color: Colors.white,
                         }),
                         placeholder: (baseStyles, state) => ({
                             ...baseStyles,
@@ -53,9 +52,9 @@ const Home = () => {
                 <div style={{marginTop: 50}}/>
                 <button
                     onClick={() => navigate('/solver', { state: { numLetters: selectedOption } } )}
-                    className="button"
+                    className="go-button"
                     type="button"
-                    style={{width: '200px',height: '50px'}}
+                    style={{width: '200px',height: '60px'}}
                     disabled={!selectedOption}
                 >
                     Go
